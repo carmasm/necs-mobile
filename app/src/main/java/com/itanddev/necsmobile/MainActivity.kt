@@ -7,8 +7,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.itanddev.necsmobile.databinding.ActivityMainBinding
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import androidx.lifecycle.lifecycleScope
 
@@ -42,37 +40,6 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-
-//            CoroutineScope(Dispatchers.IO).launch {
-//                try {
-//                    val response = RetrofitClient.apiService.login(
-//                        LoginRequest(username, password)
-//                    )
-//                    if (response.isSuccessful) {
-//                        val token = response.body()?.token
-//                        Toast.makeText(
-//                            this@MainActivity,
-//                            "Login successful!",
-//                            Toast.LENGTH_SHORT
-//                        ).show()
-//                        // Save token and navigate to next screen
-//                    } else {
-//                        Toast.makeText(
-//                            this@MainActivity,
-//                            "Invalid credentials",
-//                            Toast.LENGTH_SHORT
-//                        ).show()
-//                    }
-//                } catch (e: Exception) {
-//                    runOnUiThread {
-//                        Toast.makeText(
-//                            this@MainActivity,
-//                            "Network error: ${e.message}",
-//                            Toast.LENGTH_SHORT
-//                        ).show()
-//                    }
-//                }
-//            }
 
             lifecycleScope.launch {
                 try {
