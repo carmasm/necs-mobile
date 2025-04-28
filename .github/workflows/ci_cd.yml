@@ -34,6 +34,10 @@ jobs:
 #        with:
 #          name: release-apk
 #          path: app/build/outputs/apk/release/app-release.apk
+      - name: Verify APK Location
+        run: |
+          ls -la app/build/outputs/apk/release/
+          ls -la app/build/outputs/apk/
 
       - name: Distribute via Firebase
         if: github.ref == 'refs/heads/master'
