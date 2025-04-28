@@ -23,14 +23,14 @@ jobs:
       - name: Build Release APK
         run: ./gradlew assembleRelease
 
-      - name: Upload APK artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: release-apk
-          path: app/build/outputs/apk/release/app-release.apk
+#      - name: Upload APK artifact
+#        uses: actions/upload-artifact@v3
+#        with:
+#          name: release-apk
+#          path: app/build/outputs/apk/release/app-release.apk
 
       - name: Distribute via Firebase
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/master'
         uses: wzieba/Firebase-Distribution-Github-Action@v2
         with:
           appId: ${{ secrets.FIREBASE_APP_ID }}
