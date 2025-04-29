@@ -1,5 +1,6 @@
 package com.itanddev.necsmobile
 
+//import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -43,7 +44,7 @@ class MainActivity : AppCompatActivity() {
 
             lifecycleScope.launch {
                 try {
-                    val response = RetrofitClient.apiService.login(LoginRequest(username, password))
+                    val response = RetrofitClient.apiService.login(LoginRequest("${username}@necshn.com", password))
 
                     if (response.isSuccessful) {
                         val token = response.body()?.token
@@ -52,7 +53,13 @@ class MainActivity : AppCompatActivity() {
                             "Login successful!",
                             Toast.LENGTH_SHORT
                         ).show()
+
                         // Save token and navigate to next screen
+//                        startActivity(Intent(this@MainActivity, activity_home::class.java).apply {
+//                            putExtra("AUTH_TOKEN", token)
+//                        })
+//                        finish()
+
                     } else {
                         Toast.makeText(
                             this@MainActivity,
