@@ -12,7 +12,7 @@ android {
         minSdk = 24
         targetSdk = 35
         versionCode = 1
-        versionName = "1.0.3"
+        versionName = "1.0.4"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -39,6 +39,9 @@ android {
 }
 
 dependencies {
+
+//    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation(fileTree("libs") { include("*.jar") })
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

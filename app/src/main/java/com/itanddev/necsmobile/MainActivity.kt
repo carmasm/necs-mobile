@@ -1,6 +1,6 @@
 package com.itanddev.necsmobile
 
-//import android.content.Intent
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -13,6 +13,8 @@ import androidx.lifecycle.lifecycleScope
 
 import com.itanddev.necsmobile.data.model.LoginRequest
 import com.itanddev.necsmobile.data.api.RetrofitClient
+import com.itanddev.necsmobile.databinding.ActivityHomeBinding
+import com.itanddev.necsmobile.ui.HomeActivity
 
 class MainActivity : AppCompatActivity() {
 //    override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,10 +57,10 @@ class MainActivity : AppCompatActivity() {
                         ).show()
 
                         // Save token and navigate to next screen
-//                        startActivity(Intent(this@MainActivity, activity_home::class.java).apply {
-//                            putExtra("AUTH_TOKEN", token)
-//                        })
-//                        finish()
+                        startActivity(Intent(this@MainActivity, HomeActivity::class.java).apply {
+                            putExtra("AUTH_TOKEN", token)
+                        })
+                        finish()
 
                     } else {
                         Toast.makeText(

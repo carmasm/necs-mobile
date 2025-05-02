@@ -1,40 +1,37 @@
 package com.itanddev.necsmobile.data.scanner
 
-import android.content.BroadcastReceiver
 import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import android.util.Log
+import com.opticon.scannersdk.scanner.ScannerManager
+import com.opticon.scannersdk.scanner.ScannerType
 
 object BarcodeScanner {
-    private const val SCAN_ACTION = "com.opticon.emdk.scan.ACTION"
-    private const val SCAN_RESULT = "com.opticon.emdk.scan.RESULT"
+    private const val TAG = "BarcodeScanner"
+    var scanner: com.opticon.scannersdk.scanner.Scanner? = null
+    private var scannerManager: ScannerManager? = null
 
-    private val _scanResult = MutableLiveData<String>()
-    val scanResult: LiveData<String> = _scanResult
-
-    private val receiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            val barcode = intent.getStringExtra(SCAN_RESULT)
-            barcode?.let {
-                _scanResult.postValue(it)
+    fun initialize(context: Context) {
+        scannerManager = ScannerManager.getInstance(context)
+        scannerManager?.scannerInfoList?.forEach { info ->
+            if (info.type == ScannerType.SOFTWARE_SCANNER) {
+                scanner = scannerManager?.getScanner(info)
+                Log.d(TAG, "Scanner initialized: ${scanner != null}")
+//                break
             }
         }
     }
 
-    fun registerScanner(context: Context) {
-//        val filter = IntentFilter(SCAN_ACTION)
-//        context.registerReceiver(receiver, filter)
+    fun startScanning() {
+        scanner?.startScan()
     }
 
-    fun unregisterScanner(context: Context) {
-//        context.unregisterReceiver(receiver)
+    fun stopScanning() {
+        scanner?.stopScan()
     }
 
-    fun triggerScan(context: Context) {
-//        val intent = Intent(SCAN_ACTION)
-//        intent.putExtra("com.opticon.emdk.scan.TRIGGER", true)
-//        context.sendBroadcast(intent)
+    fun release() {
+        scanner?.deinit()
+        scanner = null
+        scannerManager = null
     }
 }
