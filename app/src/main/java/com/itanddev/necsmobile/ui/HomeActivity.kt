@@ -49,11 +49,13 @@ class HomeActivity : AppCompatActivity(), BarcodeEventListener {
     override fun onReadData(readData: ReadData) {
         runOnUiThread {
             binding.tvScanResult.text = "Scanned: ${readData.text}"
+            binding.btnScan.text = "Start Scanning"
         }
     }
 
     override fun onTimeout() {
         runOnUiThread {
+            binding.btnScan.text = "Start Scanning"
             Toast.makeText(this, "Scan timed out", Toast.LENGTH_SHORT).show()
         }
     }
