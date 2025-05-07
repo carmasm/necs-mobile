@@ -21,4 +21,26 @@
         android:text="Start Scanning"
         android:layout_marginTop="24dp"/>
 
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnCallApi"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Call Necs API"
+        android:layout_marginTop="24dp"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="16dp">
+
+        <TextView
+            android:id="@+id/tvApiResponse"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:padding="8dp"
+            android:background="@android:color/darker_gray"
+            android:textColor="@android:color/black"/>
+    </ScrollView>
+
 </LinearLayout>
