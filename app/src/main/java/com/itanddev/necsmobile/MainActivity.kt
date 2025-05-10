@@ -1,5 +1,6 @@
 package com.itanddev.necsmobile
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
@@ -15,6 +16,9 @@ import com.itanddev.necsmobile.data.model.LoginRequest
 import com.itanddev.necsmobile.data.api.RetrofitClient
 import com.itanddev.necsmobile.databinding.ActivityHomeBinding
 import com.itanddev.necsmobile.ui.HomeActivity
+//import com.google.firebase.appdistribution.FirebaseAppDistribution
+//import com.google.firebase.appdistribution.ktx.appDistribution
+//import com.google.firebase.ktx.Firebase
 
 class MainActivity : AppCompatActivity() {
 //    override fun onCreate(savedInstanceState: Bundle?) {
@@ -79,4 +83,37 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
+//    private fun checkForUpdates() {
+//        appDistribution.updateIfNewerAvailable()
+//            .addOnProgressListener { updateProgress ->
+//                // Show progress if needed
+//            }
+//            .addOnCompleteListener { task ->
+//                if (task.isSuccessful && task.result == true) {
+//                    // Update available, show dialog
+//                    showUpdateDialog()
+//                }
+//            }
+//    }
+//
+//    private fun showUpdateDialog() {
+//        AlertDialog.Builder(this)
+//            .setTitle("New Update Available")
+//            .setMessage("A new version of the app is available. Update now?")
+//            .setPositiveButton("Update") { _, _ ->
+//                startUpdate()
+//            }
+//            .setNegativeButton("Later") { dialog, _ ->
+//                dialog.dismiss()
+//            }
+//            .show()
+//    }
+//
+//    private fun startUpdate() {
+//        firebaseAppDist.startUpdate()
+//            .addOnFailureListener { e ->
+//                Toast.makeText(this, "Update failed: ${e.message}", Toast.LENGTH_SHORT).show()
+//            }
+//    }
 }

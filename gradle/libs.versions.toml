@@ -11,6 +11,8 @@ activity = "1.8.0"
 constraintlayout = "2.2.1"
 retrofit = "2.9.0"
 security-crypto = "1.1.0-alpha06"
+firebase-appdistribution = "16.0.0-beta10"
+firebaseAppdistributionApiKtx = "16.0.0-beta15"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -24,6 +26,8 @@ androidx-constraintlayout = { group = "androidx.constraintlayout", name = "const
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
 androidx-security-crypto = { module = "androidx.security:security-crypto", version.ref = "security-crypto" }
+firebase-appdistribution-api = { group = "com.google.firebase", name = "firebase-appdistribution-api-ktx", version.ref = "firebase-appdistribution" }
+firebase-appdistribution-api-ktx = { group = "com.google.firebase", name = "firebase-appdistribution-api-ktx", version.ref = "firebaseAppdistributionApiKtx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

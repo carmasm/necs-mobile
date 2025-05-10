@@ -2,6 +2,7 @@ package com.itanddev.necsmobile.ui
 
 import android.graphics.Bitmap
 import android.os.Bundle
+import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.itanddev.necsmobile.databinding.ActivityHomeBinding
@@ -10,12 +11,22 @@ import com.opticon.scannersdk.scanner.BarcodeEventListener
 import com.opticon.scannersdk.scanner.ReadData
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
+import com.google.gson.Gson
+import com.google.gson.JsonParser
 import com.itanddev.necsmobile.data.api.RetrofitClient.necsApiService
+import com.itanddev.necsmobile.data.model.Invoice
 import kotlinx.coroutines.launch
+import retrofit2.Response
+import okhttp3.ResponseBody
+import java.text.NumberFormat
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class HomeActivity : AppCompatActivity(), BarcodeEventListener {
     private lateinit var binding: ActivityHomeBinding
     private lateinit var tvApiResponse: TextView
+
+    private var isScanning = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,47 +35,107 @@ class HomeActivity : AppCompatActivity(), BarcodeEventListener {
 
         tvApiResponse = binding.tvApiResponse
 
-        // Initialize scanner
-        BarcodeScanner.initialize(this)
-        BarcodeScanner.scanner?.addBarcodeEventListener(this)
+        setupUi()
+        setupScanner()
+    }
 
+    private fun setupUi() {
         binding.btnScan.setOnClickListener {
-            if (BarcodeScanner.scanner?.isConnected == true) {
-                BarcodeScanner.startScanning()
-            } else {
-                Toast.makeText(this, "Scanner not connected", Toast.LENGTH_SHORT).show()
+            if (!isScanning) {
+                startScanning()
             }
-        }
-
-        binding.btnCallApi.setOnClickListener {
-            callNecsApi("499189") // Hardcoded invoice ID for example
         }
     }
 
+    private fun startScanning() {
+        if (BarcodeScanner.scanner?.isConnected == true) {
+            isScanning = true
+            BarcodeScanner.startScanning()
+            binding.btnScan.text = "Scanning..."
+        } else {
+            Toast.makeText(this, "Scanner not connected", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun setupScanner() {
+        BarcodeScanner.initialize(this)
+        BarcodeScanner.scanner?.addBarcodeEventListener(this)
+    }
+
     private fun callNecsApi(invoiceId: String) {
+        showLoading(true)
         lifecycleScope.launch {
             try {
                 val response = necsApiService.getInvoiceDetails(invoiceId)
-                val statusCode = response.code()
-                val message = when {
-                    response.isSuccessful -> {
-                        val responseStr = response.body()?.string() ?: ""
-                        tvApiResponse.text = responseStr
-
-                        "API Call Successful (${statusCode})"
-                    }
-                    else -> {
-                        tvApiResponse.text = "Error: ${response.errorBody()?.string()}"
-                        "API Error (${statusCode})"
-                    }
-                }
-
-                showToast(message)
+                handleApiResponse(response)
             } catch (e: Exception) {
-                tvApiResponse.text = "Exception: ${e.localizedMessage}"
-                showToast("API Call Failed: ${e.message}")
+                handleApiError(e)
+            } finally {
+                showLoading(false)
             }
         }
+    }
+
+    private fun handleApiResponse(response: Response<ResponseBody>) {
+        runOnUiThread {
+            if (response.isSuccessful) {
+                val jsonString = response.body()?.string()
+                jsonString?.let {
+                    displayInvoiceInfo(it)
+                    binding.tvApiResponse.text = Gson().toJson(JsonParser.parseString(it))
+                }
+            } else {
+                showError("API Error: ${response.code()}")
+            }
+        }
+    }
+
+    private fun displayInvoiceInfo(jsonString: String) {
+        try {
+            val invoice = Gson().fromJson(jsonString, Invoice::class.java)
+
+            with(binding) {
+                tvCustomerName.text = invoice.customerName
+                tvTotal.text = "Total: ${formatCurrency(invoice.total)}"
+                tvStatus.text = "Status: ${invoice.status}"
+                tvInvoiceDate.text = "Date: ${formatDate(invoice.invoiceDate)}"
+            }
+        } catch (e: Exception) {
+            showError("Error parsing response")
+        }
+    }
+
+    private fun formatCurrency(amount: Double): String {
+        return NumberFormat.getCurrencyInstance(Locale.US).format(amount)
+    }
+
+    private fun formatDate(dateString: String): String {
+        return try {
+            val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.getDefault())
+            val outputFormat = SimpleDateFormat("MMM dd, yyyy hh:mm a", Locale.getDefault())
+            val date = inputFormat.parse(dateString)
+            outputFormat.format(date)
+        } catch (e: Exception) {
+            dateString
+        }
+    }
+
+    private fun handleApiError(e: Exception) {
+        runOnUiThread {
+            showError("Error: ${e.localizedMessage}")
+            binding.tvApiResponse.text = e.stackTraceToString()
+        }
+    }
+
+    private fun showLoading(show: Boolean) {
+        runOnUiThread {
+            binding.progressBar.visibility = if (show) View.VISIBLE else View.GONE
+            binding.btnScan.isEnabled = !show
+        }
+    }
+
+    private fun showError(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show()
     }
 
     private fun showToast(message: String) {
@@ -90,9 +161,12 @@ class HomeActivity : AppCompatActivity(), BarcodeEventListener {
 
     // BarcodeEventListener implementation
     override fun onReadData(readData: ReadData) {
+        val scannedText = readData.text
+
         runOnUiThread {
             binding.tvScanResult.text = "Scanned: ${readData.text}"
             binding.btnScan.text = "Start Scanning"
+            callNecsApi(scannedText)
         }
     }
 
