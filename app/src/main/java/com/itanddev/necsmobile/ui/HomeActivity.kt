@@ -18,6 +18,8 @@ import com.itanddev.necsmobile.data.model.Invoice
 import kotlinx.coroutines.launch
 import retrofit2.Response
 import okhttp3.ResponseBody
+import java.math.RoundingMode
+import java.text.DecimalFormat
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -25,8 +27,6 @@ import java.util.Locale
 class HomeActivity : AppCompatActivity(), BarcodeEventListener {
     private lateinit var binding: ActivityHomeBinding
     private lateinit var tvApiResponse: TextView
-
-    private var isScanning = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,15 +41,12 @@ class HomeActivity : AppCompatActivity(), BarcodeEventListener {
 
     private fun setupUi() {
         binding.btnScan.setOnClickListener {
-            if (!isScanning) {
-                startScanning()
-            }
+            startScanning()
         }
     }
 
     private fun startScanning() {
         if (BarcodeScanner.scanner?.isConnected == true) {
-            isScanning = true
             BarcodeScanner.startScanning()
             binding.btnScan.text = "Scanning..."
         } else {
@@ -106,7 +103,9 @@ class HomeActivity : AppCompatActivity(), BarcodeEventListener {
     }
 
     private fun formatCurrency(amount: Double): String {
-        return NumberFormat.getCurrencyInstance(Locale.US).format(amount)
+        val formatter = DecimalFormat("Lps. #,##0.00")
+        formatter.roundingMode = RoundingMode.HALF_EVEN
+        return formatter.format(amount)
     }
 
     private fun formatDate(dateString: String): String {
@@ -166,7 +165,7 @@ class HomeActivity : AppCompatActivity(), BarcodeEventListener {
         runOnUiThread {
             binding.tvScanResult.text = "Scanned: ${readData.text}"
             binding.btnScan.text = "Start Scanning"
-            callNecsApi(scannedText)
+            callNecsApi("499189")
         }
     }
 
