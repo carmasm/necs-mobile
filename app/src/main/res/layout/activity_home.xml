@@ -77,8 +77,7 @@
                 android:layout_height="wrap_content"
                 android:textSize="12sp"
                 android:padding="8dp"
-                android:background="@android:color/darker_gray"
-                android:visibility="gone"/>
+                android:background="@android:color/darker_gray"/>
         </LinearLayout>
     </ScrollView>
 
