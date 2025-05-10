@@ -161,7 +161,7 @@ class HomeActivity : AppCompatActivity(), BarcodeEventListener {
         runOnUiThread {
             binding.tvScanResult.text = "Scanned: ${readData.text}"
             binding.btnScan.text = "Start Scanning"
-            callNecsApi("499189")
+            callNecsApi(scannedText)
         }
     }
 
