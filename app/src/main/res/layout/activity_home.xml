@@ -13,7 +13,8 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
         app:cardCornerRadius="8dp"
-        app:cardElevation="4dp">
+        app:cardElevation="4dp"
+        android:layout_alignParentTop="true">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -53,9 +54,9 @@
     <ScrollView
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         android:layout_below="@id/cardInvoiceInfo"
-        android:layout_above="@id/btnScan"
+        android:layout_above="@id/inputSection"
         android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp">
 
@@ -80,6 +81,40 @@
                 android:background="@android:color/darker_gray"/>
         </LinearLayout>
     </ScrollView>
+
+    <!-- 3. Manual Input Section (Above Scan Button) -->
+    <LinearLayout
+        android:id="@+id/inputSection"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/btnScan"
+        android:orientation="horizontal"
+        android:layout_marginBottom="16dp">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="Invoice ID">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etManualInvoiceId"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:text="499189"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnManualSearch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:height="65dp"
+            android:text="Search"
+            android:layout_marginStart="8dp"
+            app:icon="@drawable/ic_search"
+            app:iconGravity="textStart"/>
+    </LinearLayout>
 
     <!-- Progress Indicator -->
     <ProgressBar

@@ -11,6 +11,8 @@ import com.opticon.scannersdk.scanner.BarcodeEventListener
 import com.opticon.scannersdk.scanner.ReadData
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.textfield.TextInputEditText
 import com.google.gson.Gson
 import com.google.gson.JsonParser
 import com.itanddev.necsmobile.data.api.RetrofitClient.necsApiService
@@ -25,6 +27,8 @@ import java.util.Locale
 class HomeActivity : AppCompatActivity(), BarcodeEventListener {
     private lateinit var binding: ActivityHomeBinding
     private lateinit var tvApiResponse: TextView
+    private lateinit var etManualInvoiceId: TextInputEditText
+    private lateinit var btnManualSearch: MaterialButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,6 +36,8 @@ class HomeActivity : AppCompatActivity(), BarcodeEventListener {
         setContentView(binding.root)
 
         tvApiResponse = binding.tvApiResponse
+        etManualInvoiceId = binding.etManualInvoiceId
+        btnManualSearch = binding.btnManualSearch
 
         setupUi()
         setupScanner()
@@ -40,6 +46,15 @@ class HomeActivity : AppCompatActivity(), BarcodeEventListener {
     private fun setupUi() {
         binding.btnScan.setOnClickListener {
             startScanning()
+        }
+
+        btnManualSearch.setOnClickListener {
+            val invoiceId = etManualInvoiceId.text.toString().trim()
+            if (invoiceId.isNotEmpty()) {
+                callNecsApi(invoiceId)
+            } else {
+                etManualInvoiceId.error = "Please enter an invoice ID"
+            }
         }
     }
 
