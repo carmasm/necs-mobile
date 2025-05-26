@@ -6,12 +6,11 @@
     android:layout_height="match_parent"
     android:padding="16dp">
 
-    <!-- Invoice Info Card -->
+    <!-- Delivery Header Card -->
     <androidx.cardview.widget.CardView
-        android:id="@+id/cardInvoiceInfo"
+        android:id="@+id/cardDeliveryHeader"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
         app:cardCornerRadius="8dp"
         app:cardElevation="4dp"
         android:layout_alignParentTop="true">
@@ -22,65 +21,84 @@
             android:orientation="vertical"
             android:padding="16dp">
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="8dp">
+
+                <TextView
+                    android:id="@+id/tvDeliveryNumber"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textStyle="bold"
+                    android:textSize="16sp"/>
+
+                <TextView
+                    android:id="@+id/tvStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"/>
+<!--                android:textColor="@color/green"-->
+            </LinearLayout>
+
             <TextView
                 android:id="@+id/tvCustomerName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="18sp"
-                android:textStyle="bold"/>
+                android:textSize="14sp"
+                android:layout_marginBottom="4dp"/>
 
             <TextView
-                android:id="@+id/tvTotal"
+                android:id="@+id/tvSONumber"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:layout_marginBottom="4dp"/>
+
+            <TextView
+                android:id="@+id/tvDeliveryDate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"/>
+<!--                android:textColor="@color/gray"/>-->
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
                 android:layout_marginTop="8dp"
-                android:textSize="16sp"/>
+                android:gravity="center_vertical">
 
-            <TextView
-                android:id="@+id/tvStatus"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Almacén:"
+                    android:textSize="14sp"
+                    android:layout_marginEnd="8dp"/>
 
-            <TextView
-                android:id="@+id/tvInvoiceDate"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"/>
+                <Spinner
+                    android:id="@+id/spinnerWarehouses"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"/>
+<!--                    android:background="@drawable/spinner_background"/>-->
+            </LinearLayout>
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
-    <!-- Scan Result & Response -->
-    <ScrollView
-        android:id="@+id/scrollView"
+    <!-- Product List -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvProducts"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_below="@id/cardInvoiceInfo"
+        android:layout_height="match_parent"
+        android:layout_below="@id/cardDeliveryHeader"
         android:layout_above="@id/inputSection"
         android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/tvScanResult"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="16sp"
-                android:padding="8dp"/>
-
-            <TextView
-                android:id="@+id/tvApiResponse"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="12sp"
-                android:padding="8dp"
-                android:background="@android:color/darker_gray"/>
-        </LinearLayout>
-    </ScrollView>
+        android:layout_marginBottom="16dp"
+        android:clipToPadding="false"
+        android:paddingBottom="80dp"/>
 
     <!-- 3. Manual Input Section (Above Scan Button) -->
     <LinearLayout

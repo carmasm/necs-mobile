@@ -8,6 +8,7 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface ApiService {
     @POST("login")
@@ -16,5 +17,32 @@ interface ApiService {
     @GET("Api/salesDeliveyApi/invoiceHeader/{invoiceId}")
     suspend fun getInvoiceDetails(
         @Path("invoiceId") invoiceId: String
+    ): Response<ResponseBody>
+
+    @GET("Api/salesDeliveyApi/getSDByInvoiceId")
+    suspend fun getDeliveriesByInvoice(
+        @Query("invoiceId") invoiceId: String
+    ): Response<ResponseBody>
+
+    @GET("Api/salesDeliveyApi/getDeliveryByInvoiceId")
+    suspend fun getDeliveryDetailByInvoice(
+        @Query("invoiceId") invoiceId: String
+    ): Response<ResponseBody>
+
+    @GET("Api/salesDeliveyApi/getDeliveryById")
+    suspend fun getDeliveryById(
+        @Query("id") deliveryId: String
+    ): Response<ResponseBody>
+
+    @GET("Api/salesDeliveyApi/getWharehouses")
+    suspend fun getWarehouses(
+        @Query("branchId") branchId: String
+    ): Response<ResponseBody>
+
+    @GET("Api/salesDeliveyApi/getProductLocaionStock")
+    suspend fun getProductLocationStock(
+        @Query("pid") productId: String,
+        @Query("wId") warehouseId: String,
+        @Query("deliveryId") deliveryId: Int?
     ): Response<ResponseBody>
 }

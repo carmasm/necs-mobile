@@ -1,8 +1,10 @@
 package com.itanddev.necsmobile.ui
 
+import android.R
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.View
+import android.widget.ArrayAdapter
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.itanddev.necsmobile.databinding.ActivityHomeBinding
@@ -11,12 +13,21 @@ import com.opticon.scannersdk.scanner.BarcodeEventListener
 import com.opticon.scannersdk.scanner.ReadData
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.gson.Gson
 import com.google.gson.JsonParser
+import com.google.gson.reflect.TypeToken
 import com.itanddev.necsmobile.data.api.RetrofitClient.necsApiService
+import com.itanddev.necsmobile.data.model.DeliveryHeader
 import com.itanddev.necsmobile.data.model.Invoice
+import com.itanddev.necsmobile.data.model.LocationStock
+import com.itanddev.necsmobile.data.model.ProductItem
+import com.itanddev.necsmobile.data.model.Warehouse
+import com.itanddev.necsmobile.databinding.BottomSheetLocationsBinding
 import kotlinx.coroutines.launch
 import retrofit2.Response
 import okhttp3.ResponseBody
@@ -26,21 +37,36 @@ import java.util.Locale
 
 class HomeActivity : AppCompatActivity(), BarcodeEventListener {
     private lateinit var binding: ActivityHomeBinding
-    private lateinit var tvApiResponse: TextView
+//    private lateinit var tvApiResponse: TextView
     private lateinit var etManualInvoiceId: TextInputEditText
     private lateinit var btnManualSearch: MaterialButton
+    private lateinit var productAdapter: ProductAdapter
+    private lateinit var warehouses: List<Warehouse>
+    private var currentDeliveryId: Int? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        tvApiResponse = binding.tvApiResponse
+//        tvApiResponse = binding.tvApiResponse
         etManualInvoiceId = binding.etManualInvoiceId
         btnManualSearch = binding.btnManualSearch
 
+        setupRecyclerView()
         setupUi()
         setupScanner()
+    }
+
+    private fun setupRecyclerView() {
+        productAdapter = ProductAdapter { product ->
+            handleDispatchClick(product)
+        }
+        binding.rvProducts.apply {
+            layoutManager = LinearLayoutManager(this@HomeActivity)
+            adapter = productAdapter
+            addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
+        }
     }
 
     private fun setupUi() {
@@ -57,6 +83,55 @@ class HomeActivity : AppCompatActivity(), BarcodeEventListener {
             }
         }
     }
+
+    private fun handleDispatchClick(product: ProductItem) {
+        // 1️⃣ Gather parameters
+        val pid        = product.productId.toString()
+        val warehouse  = getSelectedWarehouse()
+        val wId        = warehouse?.warehouseId?.toString() ?: return
+        val deliveryId = currentDeliveryId  // save this in a field when you load header
+
+        showLoading(true)
+        lifecycleScope.launch {
+            try {
+                val resp = necsApiService.getProductLocationStock(pid, wId, deliveryId)
+                if (resp.isSuccessful) {
+                    val listJson = resp.body()?.string() ?: "[]"
+                    val locations: List<LocationStock> = Gson().fromJson(
+                        listJson,
+                        object : TypeToken<List<LocationStock>>() {}.type
+                    )
+                    showLocationBottomSheet(locations)
+                } else {
+                    showError("Error: ${resp.code()}")
+                }
+            } catch(e: Exception) {
+                showError("Network error")
+            } finally {
+                showLoading(false)
+            }
+        }
+    }
+
+    private fun showLocationBottomSheet(locations: List<LocationStock>) {
+        val sheet = BottomSheetDialog(this)
+        val bsBinding = BottomSheetLocationsBinding.inflate(layoutInflater)
+        sheet.setContentView(bsBinding.root)
+
+        val adapter = LocationStockAdapter(locations)
+        bsBinding.bsRvLocations.apply {
+            layoutManager = LinearLayoutManager(this@HomeActivity)
+            this.adapter = adapter
+        }
+
+        bsBinding.bsBtnSave.setOnClickListener {
+            // TODO: collect `locations` list with updated quantityDelivery
+            sheet.dismiss()
+        }
+
+        sheet.show()
+    }
+
 
     private fun startScanning() {
         if (BarcodeScanner.scanner?.isConnected == true) {
@@ -76,7 +151,7 @@ class HomeActivity : AppCompatActivity(), BarcodeEventListener {
         showLoading(true)
         lifecycleScope.launch {
             try {
-                val response = necsApiService.getInvoiceDetails(invoiceId)
+                val response = necsApiService.getDeliveryDetailByInvoice(invoiceId)
                 handleApiResponse(response)
             } catch (e: Exception) {
                 handleApiError(e)
@@ -91,8 +166,13 @@ class HomeActivity : AppCompatActivity(), BarcodeEventListener {
             if (response.isSuccessful) {
                 val jsonString = response.body()?.string()
                 jsonString?.let {
-                    displayInvoiceInfo(it)
-                    binding.tvApiResponse.text = Gson().toJson(JsonParser.parseString(it))
+                    try {
+                        val delivery = Gson().fromJson(it, DeliveryHeader::class.java)
+                        updateDeliveryUI(delivery)
+                        productAdapter.submitList(delivery.detail)
+                    } catch (e: Exception) {
+                        showError("Error parsing delivery data")
+                    }
                 }
             } else {
                 showError("API Error: ${response.code()}")
@@ -100,20 +180,72 @@ class HomeActivity : AppCompatActivity(), BarcodeEventListener {
         }
     }
 
-    private fun displayInvoiceInfo(jsonString: String) {
-        try {
-            val invoice = Gson().fromJson(jsonString, Invoice::class.java)
+    private fun updateDeliveryUI(delivery: DeliveryHeader) {
+        currentDeliveryId = delivery.salesDeliveryOrderId // Make sure this field exists in your model
 
-            with(binding) {
-                tvCustomerName.text = invoice.customerName
-                tvTotal.text = "Total: ${formatCurrency(invoice.total)}"
-                tvStatus.text = "Status: ${invoice.status}"
-                tvInvoiceDate.text = "Date: ${formatDate(invoice.invoiceDate)}"
+        with(binding) {
+            tvDeliveryNumber.text = "Entrega #${delivery.deliveryNumber}"
+            tvStatus.text = delivery.status
+            tvCustomerName.text = delivery.customerName
+            tvSONumber.text = "Orden: ${delivery.soNumber}"
+            tvDeliveryDate.text = formatDate(delivery.dateCreated)
+
+            delivery.branchId?.let { branchId ->
+                loadWarehouses(branchId.toString())
             }
-        } catch (e: Exception) {
-            showError("Error parsing response")
         }
     }
+
+    private fun loadWarehouses(branchId: String) {
+        lifecycleScope.launch {
+            try {
+                val response = necsApiService.getWarehouses(branchId)
+                if (response.isSuccessful) {
+                    response.body()?.let { warehousesJson ->
+                        warehouses = Gson().fromJson(
+                            warehousesJson.string(),
+                            object : TypeToken<List<Warehouse>>() {}.type
+                        )
+                        setupWarehouseSpinner()
+                    }
+                }
+            } catch (e: Exception) {
+                Toast.makeText(this@HomeActivity,
+                    "Error loading warehouses", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun setupWarehouseSpinner() {
+        val adapter = ArrayAdapter(
+            this,
+            R.layout.simple_spinner_item,
+            warehouses.map { it.name }
+        ).apply {
+            setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        }
+
+        binding.spinnerWarehouses.adapter = adapter
+    }
+
+    private fun getSelectedWarehouse(): Warehouse? {
+        return warehouses.getOrNull(binding.spinnerWarehouses.selectedItemPosition)
+    }
+
+//    private fun displayInvoiceInfo(jsonString: String) {
+//        try {
+//            val invoice = Gson().fromJson(jsonString, Invoice::class.java)
+//
+//            with(binding) {
+//                tvCustomerName.text = invoice.customerName
+//                tvTotal.text = "Total: ${formatCurrency(invoice.total)}"
+//                tvStatus.text = "Status: ${invoice.status}"
+//                tvInvoiceDate.text = "Date: ${formatDate(invoice.invoiceDate)}"
+//            }
+//        } catch (e: Exception) {
+//            showError("Error parsing response")
+//        }
+//    }
 
     private fun formatCurrency(amount: Double): String {
         return NumberFormat.getCurrencyInstance(Locale.US).format(amount)
@@ -122,7 +254,7 @@ class HomeActivity : AppCompatActivity(), BarcodeEventListener {
     private fun formatDate(dateString: String): String {
         return try {
             val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.getDefault())
-            val outputFormat = SimpleDateFormat("MMM dd, yyyy hh:mm a", Locale.getDefault())
+            val outputFormat = SimpleDateFormat("dd MMM yyyy HH:mm", Locale.getDefault())
             val date = inputFormat.parse(dateString)
             outputFormat.format(date)
         } catch (e: Exception) {
@@ -133,7 +265,7 @@ class HomeActivity : AppCompatActivity(), BarcodeEventListener {
     private fun handleApiError(e: Exception) {
         runOnUiThread {
             showError("Error: ${e.localizedMessage}")
-            binding.tvApiResponse.text = e.stackTraceToString()
+//            binding.tvApiResponse.text = e.stackTraceToString()
         }
     }
 
@@ -174,7 +306,7 @@ class HomeActivity : AppCompatActivity(), BarcodeEventListener {
         val scannedText = readData.text
 
         runOnUiThread {
-            binding.tvScanResult.text = "Scanned: ${readData.text}"
+//            binding.tvScanResult.text = "Scanned: ${readData.text}"
             binding.btnScan.text = "Start Scanning"
             callNecsApi(scannedText)
         }
