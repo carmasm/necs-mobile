@@ -14,11 +14,14 @@ class ProductAdapter(
 ) : RecyclerView.Adapter<ProductAdapter.ViewHolder>() {
 
     private val items = mutableListOf<ProductItem>()
+    val itemList: List<ProductItem>
+        get() = items
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvBarcode: TextView = view.findViewById(R.id.tvProductBarcode)
         val tvName: TextView = view.findViewById(R.id.tvProductName)
         val tvQuantity: TextView = view.findViewById(R.id.tvQuantity)
+        val tvQuantityDelivery: TextView = view.findViewById(R.id.tvQuantityDelivery)
         val btnDispatch: MaterialButton = view.findViewById(R.id.btnDispatch)
     }
 
@@ -33,6 +36,7 @@ class ProductAdapter(
         holder.tvBarcode.text = item.productBarCode
         holder.tvName.text = item.productName
         holder.tvQuantity.text = "Cantidad: ${item.quantityOrder}"
+        holder.tvQuantityDelivery.text = "Despachado: ${item.quantityDelivery}"
 
         holder.btnDispatch.setOnClickListener {
             onDispatchClick(item)

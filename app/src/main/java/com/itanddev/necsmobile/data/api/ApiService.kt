@@ -2,11 +2,14 @@ package com.itanddev.necsmobile.data.api
 
 import com.itanddev.necsmobile.data.model.LoginRequest
 import com.itanddev.necsmobile.data.model.LoginResponse
+import com.itanddev.necsmobile.data.model.SalesDeliveryOrderModel
+import com.itanddev.necsmobile.data.model.SaveDeliveryResponse
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -45,4 +48,9 @@ interface ApiService {
         @Query("wId") warehouseId: String,
         @Query("deliveryId") deliveryId: Int?
     ): Response<ResponseBody>
+
+    @PUT("Api/salesDeliveyApi/saveDelivery")
+    suspend fun saveDelivery(
+        @Body request: SalesDeliveryOrderModel
+    ): Response<SaveDeliveryResponse>
 }

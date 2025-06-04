@@ -1,156 +1,231 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/coordinator"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="16dp">
+    android:layout_height="match_parent">
 
-    <!-- Delivery Header Card -->
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cardDeliveryHeader"
+    <!-- ──────────────────────────────────────────────────────────────── -->
+    <!-- 1. App Bar (Toolbar)                                          -->
+    <!-- ──────────────────────────────────────────────────────────────── -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:cardCornerRadius="8dp"
-        app:cardElevation="4dp"
-        android:layout_alignParentTop="true">
+        android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar">
 
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:title="Buscar / Escanear"
+            app:titleTextColor="@color/black"
+            app:navigationIcon="@drawable/baseline_arrow_back_ios_new_24"
+            app:popupTheme="@style/ThemeOverlay.MaterialComponents.Light"/>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <!-- ──────────────────────────────────────────────────────────────── -->
+    <!-- 2. Content Frame (holds two ‘screens’)                        -->
+    <!-- ──────────────────────────────────────────────────────────────── -->
+    <FrameLayout
+        android:id="@+id/contentFrame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="?attr/actionBarSize">
+
+        <!-- ──────────────────────────────────────────────────────────── -->
+        <!-- CENTERED PROMPT (“Escanee una factura”)                     -->
+        <!-- ──────────────────────────────────────────────────────────── -->
+        <TextView
+            android:id="@+id/tvScanPrompt"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:textColor="@color/gray"
+            android:text="Escanee una factura"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+            android:visibility="visible"/>
+
+        <!-- ──────────────────────────────────────────────────────────── -->
+        <!-- a) SEARCH / SCAN Container (visible at launch)            -->
+        <!-- ──────────────────────────────────────────────────────────── -->
         <LinearLayout
+            android:id="@+id/searchContainer"
+            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp">
+            android:padding="16dp"
+            android:layout_gravity="bottom">
 
+            <!-- Progress Indicator (centered) -->
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:visibility="gone"/>
+
+            <!-- Manual Input + Search -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginBottom="8dp">
+                android:layout_marginBottom="16dp">
 
-                <TextView
-                    android:id="@+id/tvDeliveryNumber"
+                <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:textStyle="bold"
-                    android:textSize="16sp"/>
+                    android:hint="Invoice ID">
 
-                <TextView
-                    android:id="@+id/tvStatus"
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etManualInvoiceId"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number"
+                        android:text="499189"/>
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnManualSearch"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="14sp"/>
-<!--                android:textColor="@color/green"-->
+                    android:layout_marginStart="8dp"
+                    android:height="65dp"
+                    android:text="Search"
+                    app:icon="@drawable/ic_search"
+                    app:iconGravity="textStart"/>
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/tvCustomerName"
+            <!-- Scan Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnScan"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="14sp"
-                android:layout_marginBottom="4dp"/>
+                android:height="65dp"
+                android:text="Start Scanning"
+                app:icon="@drawable/ic_scan"
+                app:iconGravity="textStart"/>
 
-            <TextView
-                android:id="@+id/tvSONumber"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="14sp"
-                android:layout_marginBottom="4dp"/>
 
-            <TextView
-                android:id="@+id/tvDeliveryDate"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="12sp"/>
-<!--                android:textColor="@color/gray"/>-->
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="8dp"
-                android:gravity="center_vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Almacén:"
-                    android:textSize="14sp"
-                    android:layout_marginEnd="8dp"/>
-
-                <Spinner
-                    android:id="@+id/spinnerWarehouses"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"/>
-<!--                    android:background="@drawable/spinner_background"/>-->
-            </LinearLayout>
         </LinearLayout>
-    </androidx.cardview.widget.CardView>
 
-    <!-- Product List -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvProducts"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/cardDeliveryHeader"
-        android:layout_above="@id/inputSection"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
-        android:clipToPadding="false"
-        android:paddingBottom="80dp"/>
 
-    <!-- 3. Manual Input Section (Above Scan Button) -->
-    <LinearLayout
-        android:id="@+id/inputSection"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@id/btnScan"
-        android:orientation="horizontal"
-        android:layout_marginBottom="16dp">
+        <!-- ──────────────────────────────────────────────────────────── -->
+        <!-- b) DISPATCH Container (hidden initially)                   -->
+        <!-- ──────────────────────────────────────────────────────────── -->
+        <LinearLayout
+            android:id="@+id/dispatchContainer"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="16dp"
+            android:visibility="gone">
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:hint="Invoice ID">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etManualInvoiceId"
+            <!-- Delivery Header Card -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardDeliveryHeader"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="number"
-                android:text="499189"/>
-        </com.google.android.material.textfield.TextInputLayout>
+                app:cardCornerRadius="8dp"
+                app:cardElevation="4dp"
+                android:layout_alignParentTop="true">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnManualSearch"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:height="65dp"
-            android:text="Search"
-            android:layout_marginStart="8dp"
-            app:icon="@drawable/ic_search"
-            app:iconGravity="textStart"/>
-    </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
 
-    <!-- Progress Indicator -->
-    <ProgressBar
-        android:id="@+id/progressBar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:visibility="gone"/>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="8dp">
 
-    <!-- Scan Button at Bottom -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnScan"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Start Scanning"
-        android:height="65dp"
-        android:layout_alignParentBottom="true"
-        app:icon="@drawable/ic_scan"
-        app:iconGravity="textStart"/>
+                        <TextView
+                            android:id="@+id/tvDeliveryNumber"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:textStyle="bold"
+                            android:textSize="16sp"/>
 
-</RelativeLayout>
+                        <TextView
+                            android:id="@+id/tvStatus"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="14sp"/>
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/tvCustomerName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="14sp"
+                        android:layout_marginBottom="4dp"/>
+
+                    <TextView
+                        android:id="@+id/tvSONumber"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="14sp"
+                        android:layout_marginBottom="4dp"/>
+
+                    <TextView
+                        android:id="@+id/tvDeliveryDate"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="12sp"/>
+
+                    <!-- Warehouse Selection (Dialog trigger) -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="8dp"
+                        android:gravity="center_vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Almacén:"
+                            android:textSize="14sp"
+                            android:layout_marginEnd="8dp"/>
+
+                        <TextView
+                            android:id="@+id/tvSelectWarehouse"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:padding="12dp"
+                            android:background="?attr/selectableItemBackground"
+                            android:text="Seleccione un almacén"
+                            android:textColor="@android:color/black"
+                            android:drawableEnd="@drawable/baseline_arrow_drop_down_24"
+                            android:drawablePadding="8dp"/>
+                    </LinearLayout>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Product List -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvProducts"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:clipToPadding="false"
+                android:paddingBottom="80dp"/>
+
+            <!-- Salvar Button pinned at bottom -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSaveDispatch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="SALVAR"
+                android:layout_marginTop="8dp"
+                android:backgroundTint="@color/green"/>
+        </LinearLayout>
+    </FrameLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

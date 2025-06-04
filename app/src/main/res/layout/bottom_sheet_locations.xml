@@ -11,7 +11,7 @@
         android:id="@+id/bsTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Seleccione ubicación para despacho"
+        android:text="Existencia Por Ubicación"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"/>
 
     <!-- RecyclerView for locations -->
