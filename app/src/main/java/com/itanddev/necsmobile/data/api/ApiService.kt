@@ -1,5 +1,6 @@
 package com.itanddev.necsmobile.data.api
 
+import com.itanddev.necsmobile.data.model.ConfirmDeliveryRequest
 import com.itanddev.necsmobile.data.model.LoginRequest
 import com.itanddev.necsmobile.data.model.LoginResponse
 import com.itanddev.necsmobile.data.model.SalesDeliveryOrderModel
@@ -52,5 +53,10 @@ interface ApiService {
     @PUT("Api/salesDeliveyApi/saveDelivery")
     suspend fun saveDelivery(
         @Body request: SalesDeliveryOrderModel
+    ): Response<SaveDeliveryResponse>
+
+    @PUT("Api/salesDeliveyApi/confirmDelivery")
+    suspend fun confirmDelivery(
+        @Body request: ConfirmDeliveryRequest
     ): Response<SaveDeliveryResponse>
 }

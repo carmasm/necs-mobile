@@ -67,7 +67,7 @@ data class SalesDeliveryOrderModel (
     val detail: List<SalesDeliveryDetailModel>,
 
     @SerializedName("detailLocations")
-    val detailLocations: List<SalesDeliveryDetailLocationsModel>
+    val detailLocations: List<SalesDeliveryDetailLocationsModel>?
 )
 
 /**
@@ -152,4 +152,11 @@ data class SalesDeliveryDetailLocationsModel(
 
     @SerializedName("quantity")
     val quantity: Double
+)
+
+data class ConfirmDeliveryRequest(
+    @SerializedName("model")
+    val model: SalesDeliveryOrderModel,
+    @SerializedName("model2")
+    val model2: SalesDeliveryOrderModel
 )

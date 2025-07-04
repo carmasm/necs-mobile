@@ -25,6 +25,20 @@
             app:popupTheme="@style/ThemeOverlay.MaterialComponents.Light"/>
     </com.google.android.material.appbar.AppBarLayout>
 
+    <!-- 1.2 Edit FAB (bottom right) -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabEdit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/baseline_edit_24"
+        app:tint="@android:color/white"
+        app:backgroundTint="@color/green"
+        app:layout_anchor="@id/contentFrame"
+        app:layout_anchorGravity="bottom|end"
+        android:layout_marginBottom="100dp"
+        android:layout_marginEnd="16dp"
+        android:contentDescription="TODO"/>
+
     <!-- ──────────────────────────────────────────────────────────────── -->
     <!-- 2. Content Frame (holds two ‘screens’)                        -->
     <!-- ──────────────────────────────────────────────────────────────── -->
@@ -33,6 +47,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="?attr/actionBarSize">
+
+
 
         <!-- ──────────────────────────────────────────────────────────── -->
         <!-- CENTERED PROMPT (“Escanee una factura”)                     -->
@@ -152,11 +168,23 @@
                             android:textStyle="bold"
                             android:textSize="16sp"/>
 
-                        <TextView
-                            android:id="@+id/tvStatus"
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chipStatus"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textSize="14sp"/>
+                            style="@style/Widget.MaterialComponents.Chip.Choice"
+                            android:text="Confirmado"
+                            android:textSize="14sp"
+                            android:textColor="@color/white"
+                            app:chipIcon="@drawable/ic_dot"
+                            app:chipIconSize="8dp"
+                            app:chipIconTint="@color/green"
+                            app:chipBackgroundColor="@color/green"
+                            app:chipCornerRadius="16dp"
+                            app:chipMinHeight="32dp"
+                            app:chipStartPadding="8dp"
+                            app:chipEndPadding="8dp"/>
+
                     </LinearLayout>
 
                     <TextView
@@ -218,7 +246,7 @@
                 android:clipToPadding="false"
                 android:paddingBottom="80dp"/>
 
-            <!-- Salvar Button pinned at bottom -->
+            <!-- Confirmar Button pinned at bottom -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnSaveDispatch"
                 android:layout_width="match_parent"
@@ -226,6 +254,20 @@
                 android:text="SALVAR"
                 android:layout_marginTop="8dp"
                 android:backgroundTint="@color/green"/>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnConfirm"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="CONFIRMAR"
+                android:layout_marginTop="8dp"
+                android:backgroundTint="@color/green"/>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnCancel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="CANCELAR"
+                android:layout_marginTop="8dp"
+                android:backgroundTint="@color/gray"/>
         </LinearLayout>
     </FrameLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

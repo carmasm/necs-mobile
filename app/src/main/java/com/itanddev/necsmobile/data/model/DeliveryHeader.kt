@@ -8,5 +8,7 @@ data class DeliveryHeader(
     val soNumber: String,
     val status: String,
     val branchId: Int?,
-    val detail: List<ProductItem>
+    val salesInvoiceID: Int?,
+    val detail: List<ProductItem>,
+    var detailLocations: List<SalesDeliveryDetailLocationsModel>
 )

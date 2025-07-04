@@ -13,6 +13,8 @@ class ProductAdapter(
     private val onDispatchClick: (ProductItem) -> Unit
 ) : RecyclerView.Adapter<ProductAdapter.ViewHolder>() {
 
+    var editingEnabled = false
+
     private val items = mutableListOf<ProductItem>()
     val itemList: List<ProductItem>
         get() = items
@@ -22,6 +24,7 @@ class ProductAdapter(
         val tvName: TextView = view.findViewById(R.id.tvProductName)
         val tvQuantity: TextView = view.findViewById(R.id.tvQuantity)
         val tvQuantityDelivery: TextView = view.findViewById(R.id.tvQuantityDelivery)
+        val tvQuantityPending: TextView  = view.findViewById(R.id.tvQuantityPending)
         val btnDispatch: MaterialButton = view.findViewById(R.id.btnDispatch)
     }
 
@@ -35,8 +38,13 @@ class ProductAdapter(
         val item = items[position]
         holder.tvBarcode.text = item.productBarCode
         holder.tvName.text = item.productName
-        holder.tvQuantity.text = "Cantidad: ${item.quantityOrder}"
-        holder.tvQuantityDelivery.text = "Despachado: ${item.quantityDelivery}"
+        holder.tvQuantity.text = "Cantidad:       ${item.quantityOrder}"
+        holder.tvQuantityDelivery.text = "Despachado:   ${item.quantityDelivery}"
+
+        val pending = (item.quantityOrder - item.quantityDelivery).coerceAtLeast(0.0)
+        holder.tvQuantityPending.text = "Pendiente:       $pending"
+
+        holder.btnDispatch.isEnabled = editingEnabled
 
         holder.btnDispatch.setOnClickListener {
             onDispatchClick(item)

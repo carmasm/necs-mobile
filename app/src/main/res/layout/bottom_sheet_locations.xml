@@ -22,12 +22,12 @@
         android:layout_weight="1"
         android:overScrollMode="never"/>
 
-    <!-- SALVAR button -->
+    <!-- ACEPTAR button -->
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/bsBtnSave"
+        android:id="@+id/bsBtnAccept"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="SALVAR"
+        android:text="ACEPTAR"
         style="@style/Widget.MaterialComponents.Button"
         android:layout_marginTop="8dp"
         android:backgroundTint="@color/green"/>
