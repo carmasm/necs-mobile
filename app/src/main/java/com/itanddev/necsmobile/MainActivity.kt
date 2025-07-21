@@ -41,14 +41,14 @@ class MainActivity : AppCompatActivity() {
 
         firebaseAppDistribution = FirebaseAppDistribution.getInstance()
 
-        if (BuildConfig.DEBUG) {
+//        if (BuildConfig.DEBUG) {
             // Skip authentication in debug builds
-            checkForUpdates()
-        } else {
-            firebaseAppDistribution.signInTester().addOnSuccessListener {
-                checkForUpdates() // Proceed after auth
-            }
-        }
+        checkForUpdates()
+//        } else {
+//            firebaseAppDistribution.signInTester().addOnSuccessListener {
+//                checkForUpdates() // Proceed after auth
+//            }
+//        }
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
