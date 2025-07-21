@@ -75,3 +75,4 @@ jobs:
             asset_path: ${{ env.OUTPUT_DIR }}/${{ env.APK_NAME }}
             asset_name: ${{ env.APP_NAME }}-v${{ steps.version.outputs.version_name }}.apk
             asset_content_type: application/vnd.android.package-archive
+            
