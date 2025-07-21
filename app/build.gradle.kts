@@ -46,7 +46,7 @@ android {
 }
 
 firebaseAppDistribution {
-    appId = "your-firebase-app-id"
+    appId = "1:681486187069:android:5d1f9232209e6761568854"
     serviceCredentialsFile = "firebase-service-account.json" // Path to your service account file
     groups = "testers"
 //        releaseNotesFile = "release-notes.txt"

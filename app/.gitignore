@@ -1,2 +1,4 @@
 /build
 firebase-service-account.json
+app/google-services.json
+app/firebase-service-account.json

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "681486187069",
+    "project_id": "necsmobile-eaaf9",
+    "storage_bucket": "necsmobile-eaaf9.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:681486187069:android:5d1f9232209e6761568854",
+        "android_client_info": {
+          "package_name": "com.itanddev.necsmobile"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCp1JBgTmvbRVX6VwxAfZ3dZhmLJcVRl5I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
