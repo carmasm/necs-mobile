@@ -1,4 +1,4 @@
-name: Build and Distribute to Firebase
+name: Build and Release to GitHub
 
 on:
   push:
@@ -9,10 +9,16 @@ on:
 jobs:
   build-and-distribute:
     runs-on: ubuntu-latest
+    env:
+      APP_NAME: "NECSMobile"
+      OUTPUT_DIR: app/build/outputs/apk/debug
+      APK_NAME: app-debug.apk
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Needed for automatic version tagging
 
       - name: Set up JDK 17
         uses: actions/setup-java@v3
@@ -29,21 +35,43 @@ jobs:
       - name: Build Debug APK
         run: ./gradlew assembleDebug
 
-#      - name: Upload APK artifact --
-#        uses: actions/upload-artifact@v3
-#        with:
-#          name: debug-apk
-#          path: app/build/outputs/apk/debug/app-debug.apk
+      - name: Extract version info
+        id: version
+        run: |
+            VERSION_NAME=$(grep 'versionName' app/build.gradle.kts | sed -E 's/.*versionName = "(.*)"/\1/')
+            VERSION_CODE=$(grep 'versionCode' app/build.gradle.kts | sed -E 's/.*versionCode = ([0-9]+).*/\1/')
+            echo "version_name=$VERSION_NAME" >> $GITHUB_OUTPUT
+            echo "version_code=$VERSION_CODE" >> $GITHUB_OUTPUT
+            echo "Release Tag: v$VERSION_NAME-$VERSION_CODE"
+
       - name: Verify APK Location
         run: |
           ls -la app/build/outputs/apk/debug/
           ls -la app/build/outputs/apk/
-
-      - name: Distribute via Firebase
+          
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
         if: github.ref == 'refs/heads/master'
-        uses: wzieba/Firebase-Distribution-Github-Action@v1
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          appId: ${{ secrets.FIREBASE_APP_ID }}
-          serviceCredentialsFileContent: ${{ secrets.CREDENTIAL_FILE_CONTENT }}
-          groups: testers  # Comma-separated list of tester groups
-          file: app/build/outputs/apk/debug/app-debug.apk
+            tag_name: v${{ steps.version.outputs.version_name }}-${{ steps.version.outputs.version_code }}
+            release_name: ${{ env.APP_NAME }} v${{ steps.version.outputs.version_name }}
+            body: |
+              Automated build from ${{ github.sha }}
+              - Version: ${{ steps.version.outputs.version_name }}
+              - Build: ${{ steps.version.outputs.version_code }}
+            draft: false
+            pre release: true
+
+      - name: Upload APK to Release
+        uses: actions/upload-release-asset@v1
+        if: github.ref == 'refs/heads/master'
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+            upload_url: ${{ steps.create_release.outputs.upload_url }}
+            asset_path: ${{ env.OUTPUT_DIR }}/${{ env.APK_NAME }}
+            asset_name: ${{ env.APP_NAME }}-v${{ steps.version.outputs.version_name }}.apk
+            asset_content_type: application/vnd.android.package-archive
