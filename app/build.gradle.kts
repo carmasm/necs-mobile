@@ -30,6 +30,11 @@ android {
         debug {
             // Ensure debug builds are signed too
             signingConfig = signingConfigs.getByName("debug")
+//            firebaseAppDistribution {
+//                appId = "1:681486187069:android:5d1f9232209e6761568854"
+//                serviceCredentialsFile = "firebase-service-account.json" // Path to your service account file
+//                groups = "testers"
+//            }
         }
     }
 

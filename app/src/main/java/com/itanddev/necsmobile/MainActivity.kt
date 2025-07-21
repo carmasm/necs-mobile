@@ -11,6 +11,7 @@ import androidx.core.view.WindowInsetsCompat
 import com.itanddev.necsmobile.databinding.ActivityMainBinding
 import kotlinx.coroutines.launch
 import androidx.lifecycle.lifecycleScope
+import com.google.firebase.appdistribution.BuildConfig
 import com.google.firebase.appdistribution.FirebaseAppDistribution
 
 import com.itanddev.necsmobile.data.model.LoginRequest
@@ -40,8 +41,13 @@ class MainActivity : AppCompatActivity() {
 
         firebaseAppDistribution = FirebaseAppDistribution.getInstance()
 
-        firebaseAppDistribution.signInTester().addOnSuccessListener {
-            checkForUpdates() // Proceed after auth
+        if (BuildConfig.DEBUG) {
+            // Skip authentication in debug builds
+            checkForUpdates()
+        } else {
+            firebaseAppDistribution.signInTester().addOnSuccessListener {
+                checkForUpdates() // Proceed after auth
+            }
         }
 
         binding = ActivityMainBinding.inflate(layoutInflater)
