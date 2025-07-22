@@ -1,26 +1,16 @@
 package com.itanddev.necsmobile
 
-import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import com.itanddev.necsmobile.databinding.ActivityMainBinding
 import kotlinx.coroutines.launch
 import androidx.lifecycle.lifecycleScope
-import com.google.firebase.appdistribution.BuildConfig
-import com.google.firebase.appdistribution.FirebaseAppDistribution
 
 import com.itanddev.necsmobile.data.model.LoginRequest
 import com.itanddev.necsmobile.data.api.RetrofitClient
-import com.itanddev.necsmobile.databinding.ActivityHomeBinding
 import com.itanddev.necsmobile.ui.HomeActivity
-//import com.google.firebase.appdistribution.FirebaseAppDistribution
-//import com.google.firebase.appdistribution.ktx.appDistribution
-//import com.google.firebase.ktx.Firebase
 
 class MainActivity : AppCompatActivity() {
 //    override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,24 +23,11 @@ class MainActivity : AppCompatActivity() {
 //            insets
 //        }
 //    }
-    private lateinit var firebaseAppDistribution: FirebaseAppDistribution
     private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        firebaseAppDistribution = FirebaseAppDistribution.getInstance()
-
-//        if (BuildConfig.DEBUG) {
-            // Skip authentication in debug builds
-        checkForUpdates()
-//        } else {
-//            firebaseAppDistribution.signInTester().addOnSuccessListener {
-//                checkForUpdates() // Proceed after auth
-//            }
-//        }
-
-        binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
 
@@ -99,38 +76,38 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun checkForUpdates() {
-        firebaseAppDistribution.checkForNewRelease()
-            .addOnSuccessListener { release ->
-                if (release != null) {
-                    showUpdateDialog() // New release available
-                }
-            }
-            .addOnFailureListener { exception ->
-                // Handle error (log it or show message)
-//                Log.e("UpdateCheck", "Failed to check for updates", exception)
-                Toast.makeText(this, "Failed to check for updates: ${exception.message}", Toast.LENGTH_SHORT).show()
-            }
-    }
-
-    private fun showUpdateDialog() {
-        AlertDialog.Builder(this)
-            .setTitle("New Update Available")
-            .setMessage("Download and install the latest version?")
-            .setPositiveButton("Update") { _, _ ->
-                downloadAndInstallUpdate()
-            }
-            .setNegativeButton("Later", null)
-            .show()
-    }
-
-    private fun downloadAndInstallUpdate() {
-        firebaseAppDistribution.updateApp().addOnCompleteListener { task ->
-            if (!task.isSuccessful) {
-                Toast.makeText(this, "Download and install failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
+//    private fun checkForUpdates() {
+//        firebaseAppDistribution.checkForNewRelease()
+//            .addOnSuccessListener { release ->
+//                if (release != null) {
+//                    showUpdateDialog() // New release available
+//                }
+//            }
+//            .addOnFailureListener { exception ->
+//                // Handle error (log it or show message)
+////                Log.e("UpdateCheck", "Failed to check for updates", exception)
+//                Toast.makeText(this, "Failed to check for updates: ${exception.message}", Toast.LENGTH_SHORT).show()
+//            }
+//    }
+//
+//    private fun showUpdateDialog() {
+//        AlertDialog.Builder(this)
+//            .setTitle("New Update Available")
+//            .setMessage("Download and install the latest version?")
+//            .setPositiveButton("Update") { _, _ ->
+//                downloadAndInstallUpdate()
+//            }
+//            .setNegativeButton("Later", null)
+//            .show()
+//    }
+//
+//    private fun downloadAndInstallUpdate() {
+//        firebaseAppDistribution.updateApp().addOnCompleteListener { task ->
+//            if (!task.isSuccessful) {
+//                Toast.makeText(this, "Download and install failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+//            }
+//        }
+//    }
 
 //    private fun checkForUpdates() {
 //        appDistribution.updateIfNewerAvailable()
