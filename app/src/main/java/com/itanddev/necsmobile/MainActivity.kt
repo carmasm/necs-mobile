@@ -11,6 +11,7 @@ import androidx.lifecycle.lifecycleScope
 import com.itanddev.necsmobile.data.model.LoginRequest
 import com.itanddev.necsmobile.data.api.RetrofitClient
 import com.itanddev.necsmobile.ui.HomeActivity
+import com.itanddev.necsmobile.ui.UpdateManager
 
 class MainActivity : AppCompatActivity() {
 //    override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,6 +31,7 @@ class MainActivity : AppCompatActivity() {
 
         setContentView(binding.root)
 
+        UpdateManager.checkForUpdate(this)
 
         binding.loginButton.setOnClickListener {
             val username = binding.usernameEditText.text.toString()

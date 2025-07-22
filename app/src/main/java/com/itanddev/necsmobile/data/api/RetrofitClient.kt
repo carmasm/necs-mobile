@@ -5,7 +5,9 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitClient {
-    private const val BASE_URL = "https://mocabapi.ddns.net/"
+    private const val MOCAB_URL = "https://mocabapi.ddns.net/"
+    private const val NECS_URL = "http://erp.necshn.com:8090/"
+    private const val GITHUB_API_URL = "https://api.github.com/"
 
     private val okHttpClient = OkHttpClient.Builder()
         .addInterceptor { chain ->
@@ -16,7 +18,7 @@ object RetrofitClient {
 
     val apiService: ApiService by lazy {
         Retrofit.Builder()
-            .baseUrl(BASE_URL)
+            .baseUrl(MOCAB_URL)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
@@ -32,10 +34,27 @@ object RetrofitClient {
 
     val necsApiService: ApiService by lazy {
         Retrofit.Builder()
-            .baseUrl("http://erp.necshn.com:8090/")
+            .baseUrl(NECS_URL)
             .client(necsOkHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(ApiService::class.java)
+    }
+
+    private val gitHubClient = OkHttpClient.Builder()
+        .addInterceptor { chain ->
+            val request = chain.request().newBuilder()
+                .addHeader("User-Agent", "NECSMobile") // GitHub requires User-Agent
+                .build()
+            chain.proceed(request)
+        }.build()
+
+    val gitHubApiService: GitHubApiService by lazy {
+        Retrofit.Builder()
+            .baseUrl(GITHUB_API_URL)
+            .client(gitHubClient)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(GitHubApiService::class.java)
     }
 }
