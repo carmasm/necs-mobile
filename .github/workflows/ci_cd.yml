@@ -32,6 +32,12 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
+      - name: Set up debug keystore
+        run: |
+          cat <<EOF > debug.keystore
+          ${{ secrets.DEBUG_KEYSTORE }}
+          EOF
+
       - name: Build Debug APK
         run: ./gradlew assembleDebug
 

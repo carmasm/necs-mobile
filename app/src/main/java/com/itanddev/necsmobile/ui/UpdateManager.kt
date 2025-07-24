@@ -57,12 +57,12 @@ object UpdateManager {
         AlertDialog.Builder(context)
             .setTitle("New Version Available")
             .setMessage("Version $newVersion is available. Update now?")
-            .setPositiveButton("Update") { _, _ -> downloadUpdate(context, apkUrl) }
+            .setPositiveButton("Update") { _, _ -> downloadUpdate(context, apkUrl, newVersion) }
             .setNegativeButton("Later", null)
             .show()
     }
 
-    private fun downloadUpdate(context: Context, apkUrl: String) {
+    private fun downloadUpdate(context: Context, apkUrl: String, newVersion: String) {
         val downloadManager = context.getSystemService<DownloadManager>() ?: return
 
         val request = DownloadManager.Request(Uri.parse(apkUrl))
@@ -71,7 +71,7 @@ object UpdateManager {
             .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
             .setDestinationInExternalPublicDir(
                 Environment.DIRECTORY_DOWNLOADS,
-                "$APP_NAME-Update.apk"
+                "$APP_NAME-Update-$newVersion.apk"
             )
 
         downloadManager.enqueue(request)
