@@ -35,7 +35,7 @@ jobs:
       - name: Set up debug keystore
         run: |
           cat <<EOF > debug.keystore
-          ${{ secrets.DEBUG_KEYSTORE }}
+          ${{ secrets.DEBUG_KEYSTORE_B64 }}
           EOF
 
       - name: Inspect keystore
