@@ -34,9 +34,17 @@ jobs:
 
       - name: Set up debug keystore
         run: |
-          echo "${{ secrets.DEBUG_KEYSTORE_B64 }}" \
-            | base64 --decode > debug.keystore
-          chmod 600 debug.keystore
+          cat <<EOF > debug.keystore
+          ${{ secrets.DEBUG_KEYSTORE }}
+          EOF
+
+      - name: Inspect keystore
+        run: |
+          ls -l debug.keystore
+          keytool -list \
+            -keystore debug.keystore \
+            -storepass android \
+            -alias androiddebugkey
 
       - name: Build Debug APK
         run: ./gradlew assembleDebug
