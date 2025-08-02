@@ -1,6 +1,10 @@
 package com.itanddev.necsmobile.data.model
 
+import com.google.gson.annotations.SerializedName
+
 data class LoginRequest(
-    val email: String,
+    @SerializedName("userName")
+    val userName: String,
+    @SerializedName("password")
     val password: String
 )

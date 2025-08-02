@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.itanddev.necsmobile.databinding.ActivityMainBinding
 import kotlinx.coroutines.launch
 import androidx.lifecycle.lifecycleScope
+import com.itanddev.necsmobile.data.api.RetrofitClient.necsApiService
 
 import com.itanddev.necsmobile.data.model.LoginRequest
 import com.itanddev.necsmobile.data.api.RetrofitClient
@@ -45,26 +46,37 @@ class MainActivity : AppCompatActivity() {
 
             lifecycleScope.launch {
                 try {
-                    val response = RetrofitClient.apiService.login(LoginRequest("${username}@necshn.com", password))
+                    val response = necsApiService.loginNecs(LoginRequest(username, password))
 
                     if (response.isSuccessful) {
-                        val token = response.body()?.token
-                        Toast.makeText(
-                            this@MainActivity,
-                            "Login successful!",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        val type = response.body()?.type
+                        val message = response.body()?.message
 
-                        // Save token and navigate to next screen
-                        startActivity(Intent(this@MainActivity, HomeActivity::class.java).apply {
-                            putExtra("AUTH_TOKEN", token)
-                        })
-                        finish()
+                        if (type == "success") {
 
+                            Toast.makeText(
+                                this@MainActivity,
+                                message,
+                                Toast.LENGTH_SHORT
+                            ).show()
+
+                            // Save token and navigate to next screen
+                            startActivity(Intent(this@MainActivity, HomeActivity::class.java))
+                            finish()
+                        }
+                        else {
+                            Toast.makeText(
+                                this@MainActivity,
+                                message,
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
                     } else {
+                        val message = response.body()?.message
+
                         Toast.makeText(
                             this@MainActivity,
-                            "Invalid credentials",
+                            message,
                             Toast.LENGTH_SHORT
                         ).show()
                     }

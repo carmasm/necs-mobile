@@ -59,4 +59,9 @@ interface ApiService {
     suspend fun confirmDelivery(
         @Body request: ConfirmDeliveryRequest
     ): Response<SaveDeliveryResponse>
+
+    @POST("Api/salesDeliveyApi/login")
+    suspend fun loginNecs(
+        @Body request: LoginRequest
+    ): Response<LoginResponse>
 }
