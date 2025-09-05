@@ -649,7 +649,7 @@ class HomeActivity : AppCompatActivity(), BarcodeEventListener {
                     showLoading(false)
                     when {
                         deliveries.isEmpty() -> {
-                            showError("No se encontraron entregas para esa factura")
+                            showError("No se encontraron despachos para la factura: $invoiceId")
                         }
                         deliveries.size == 1 -> {
                             // Only one: jump straight to detail
