@@ -2,29 +2,24 @@ package com.itanddev.necsmobile
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.InputType
+import android.widget.EditText
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.itanddev.necsmobile.databinding.ActivityMainBinding
 import kotlinx.coroutines.launch
 import androidx.lifecycle.lifecycleScope
+import com.itanddev.necsmobile.data.api.Prefs
 import com.itanddev.necsmobile.data.api.RetrofitClient.necsApiService
 
 import com.itanddev.necsmobile.data.model.LoginRequest
 import com.itanddev.necsmobile.data.api.RetrofitClient
+import com.itanddev.necsmobile.data.api.SharedPreferencesHelper
 import com.itanddev.necsmobile.ui.HomeActivity
 import com.itanddev.necsmobile.ui.UpdateManager
 
 class MainActivity : AppCompatActivity() {
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//        enableEdgeToEdge()
-//        setContentView(R.layout.activity_main)
-//        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-//            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-//            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-//            insets
-//        }
-//    }
     private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,6 +29,10 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         UpdateManager.checkForUpdate(this)
+
+        binding.settingsButton.setOnClickListener {
+            showChangeUrlDialog()
+        }
 
         binding.loginButton.setOnClickListener {
             val username = binding.usernameEditText.text.toString()
@@ -91,69 +90,36 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-//    private fun checkForUpdates() {
-//        firebaseAppDistribution.checkForNewRelease()
-//            .addOnSuccessListener { release ->
-//                if (release != null) {
-//                    showUpdateDialog() // New release available
-//                }
-//            }
-//            .addOnFailureListener { exception ->
-//                // Handle error (log it or show message)
-////                Log.e("UpdateCheck", "Failed to check for updates", exception)
-//                Toast.makeText(this, "Failed to check for updates: ${exception.message}", Toast.LENGTH_SHORT).show()
-//            }
-//    }
-//
-//    private fun showUpdateDialog() {
-//        AlertDialog.Builder(this)
-//            .setTitle("New Update Available")
-//            .setMessage("Download and install the latest version?")
-//            .setPositiveButton("Update") { _, _ ->
-//                downloadAndInstallUpdate()
-//            }
-//            .setNegativeButton("Later", null)
-//            .show()
-//    }
-//
-//    private fun downloadAndInstallUpdate() {
-//        firebaseAppDistribution.updateApp().addOnCompleteListener { task ->
-//            if (!task.isSuccessful) {
-//                Toast.makeText(this, "Download and install failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
-//            }
-//        }
-//    }
+    private fun showChangeUrlDialog() {
+        val current = Prefs.getBaseUrl(this)
+        val editText = EditText(this).apply {
+            setText(current)
+            inputType = InputType.TYPE_TEXT_VARIATION_URI
+            setSelection(text.length)
+            hint = "https://your-host:port/"
+        }
 
-//    private fun checkForUpdates() {
-//        appDistribution.updateIfNewerAvailable()
-//            .addOnProgressListener { updateProgress ->
-//                // Show progress if needed
-//            }
-//            .addOnCompleteListener { task ->
-//                if (task.isSuccessful && task.result == true) {
-//                    // Update available, show dialog
-//                    showUpdateDialog()
-//                }
-//            }
-//    }
-//
-//    private fun showUpdateDialog() {
-//        AlertDialog.Builder(this)
-//            .setTitle("New Update Available")
-//            .setMessage("A new version of the app is available. Update now?")
-//            .setPositiveButton("Update") { _, _ ->
-//                startUpdate()
-//            }
-//            .setNegativeButton("Later") { dialog, _ ->
-//                dialog.dismiss()
-//            }
-//            .show()
-//    }
-//
-//    private fun startUpdate() {
-//        firebaseAppDist.startUpdate()
-//            .addOnFailureListener { e ->
-//                Toast.makeText(this, "Update failed: ${e.message}", Toast.LENGTH_SHORT).show()
-//            }
-//    }
+        AlertDialog.Builder(this)
+            .setTitle("NECS base URL")
+            .setMessage("Change the server base URL used for NECS API calls.")
+            .setView(editText)
+            .setPositiveButton("Save") { _, _ ->
+                var newUrl = editText.text.toString().trim()
+                if (!newUrl.startsWith("http://") && !newUrl.startsWith("https://")) {
+                    Toast.makeText(this, "URL must start with http:// or https://", Toast.LENGTH_SHORT).show()
+                    return@setPositiveButton
+                }
+                if (!newUrl.endsWith("/")) newUrl += "/"
+                Prefs.setBaseUrl(this, newUrl)
+
+                // Optionally show a toast and/or re-create any cached retrofit instance:
+                Toast.makeText(this, "Base URL saved: $newUrl", Toast.LENGTH_SHORT).show()
+            }
+            .setNeutralButton("Default") { _, _ ->
+                Prefs.setBaseUrl(this, Prefs.getDefault())
+                Toast.makeText(this, "Reset to default", Toast.LENGTH_SHORT).show()
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
 }
