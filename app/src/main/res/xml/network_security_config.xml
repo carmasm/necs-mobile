@@ -4,6 +4,7 @@
         <domain includeSubdomains="true">erp.necshn.com</domain>
         <domain includeSubdomains="true">necs.ferremarhn.com</domain>
         <domain includeSubdomains="true">45.238.143.106</domain>
+        <domain includeSubdomains="true">192.168.10.216</domain>
     </domain-config>
 
     <!-- Default strict policy -->
